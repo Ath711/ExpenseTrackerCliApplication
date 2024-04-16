@@ -164,7 +164,7 @@ public class ExpenseTrackerCliApplication {
                 case 2:
                     boolean expenseMenuActive = true;
                     while (expenseMenuActive){
-                        System.out.println("----Expense DETAILS----");
+                        System.out.println("----EXPENSE DETAILS----");
                         System.out.println("1. add expense ");
                         System.out.println("2. remove expense");
                         System.out.println("3. update expense");
