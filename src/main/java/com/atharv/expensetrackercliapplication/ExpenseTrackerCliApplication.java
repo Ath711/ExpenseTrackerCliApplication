@@ -2,14 +2,18 @@ package com.atharv.expensetrackercliapplication;
 
 import com.atharv.expensetrackercliapplication.beans.Expense;
 import com.atharv.expensetrackercliapplication.beans.Income;
+import com.atharv.expensetrackercliapplication.service.Calculate;
 import com.atharv.expensetrackercliapplication.service.ExpenseService;
 import com.atharv.expensetrackercliapplication.service.IncomeService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.util.List;
+import java.net.CacheRequest;
 import java.util.Scanner;
+
+import static com.atharv.expensetrackercliapplication.constant.StringConstant.EXITING_TO_MAIN_MENU;
+import static com.atharv.expensetrackercliapplication.constant.StringConstant.INVALID_CHOICE;
 
 @SpringBootApplication
 @ComponentScan("com.atharv")
@@ -19,20 +23,20 @@ public class ExpenseTrackerCliApplication {
         var context = SpringApplication.run(ExpenseTrackerCliApplication.class, args);
         ExpenseService expenseService = context.getBean(ExpenseService.class);
         IncomeService incomeService = context.getBean(IncomeService.class);
+        Calculate calculate = context.getBean(Calculate.class);
         Scanner scanner = new Scanner(System.in);
 
         boolean mainMenuActive = true;
-        int addIncomeCount = 0;
-        int addExpenseCount = 0;
 
         while (mainMenuActive) {
             System.out.println();
             System.out.println("1. Select for Income Details Operations");
             System.out.println("2. Select for Expense Details Operations");
-            System.out.println("3. exit");
+            System.out.println("3. Make Calculation for Surplus or Deficit budget");
+            System.out.println("4. exit");
             System.out.println();
 
-            int choice = 3;
+            int choice = 4;
             try {
                 choice = scanner.nextInt();
                 scanner.nextLine();
@@ -76,11 +80,7 @@ public class ExpenseTrackerCliApplication {
                                 System.out.println("enter income source ");
                                 incomeSource = scanner.nextLine();
 
-                                try {
-                                    incomeService.addIncome(++addIncomeCount, new Income(incomeAmount, incomeSource));
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
+                                incomeService.addIncome(new Income(incomeAmount, incomeSource));
 
                                 System.out.println();
                                 break;
@@ -95,11 +95,7 @@ public class ExpenseTrackerCliApplication {
                                     System.out.println(e);
                                 }
 
-                                try {
-                                    incomeService.removeIncome(incomeIndex);
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
+                                incomeService.removeIncome(incomeIndex);
 
                                 System.out.println();
                                 break;
@@ -109,26 +105,21 @@ public class ExpenseTrackerCliApplication {
                                 int newIncomeAmount = 0;
                                 int newIncomeIndex = 0;
 
-                                System.out.println("enter the index of income source to update ");
                                 try {
+                                    System.out.println("enter the index of income source to update ");
                                     newIncomeIndex = scanner.nextInt();
                                     scanner.nextLine();
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
 
-                                System.out.println("enter the updated income amount ");
-                                try {
+                                    System.out.println("enter the updated income amount ");
+
                                     newIncomeAmount = scanner.nextInt();
                                     scanner.nextLine();
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
 
-                                System.out.println("enter the updated income source ");
-                                newIncomeSource = scanner.nextLine();
-                                try {
-                                    incomeService.updateIncome(newIncomeIndex, new Income(newIncomeAmount, newIncomeSource));
+                                    System.out.println("enter the updated income source ");
+                                    newIncomeSource = scanner.nextLine();
+
+                                    incomeService.updateIncome(new Income(newIncomeIndex, newIncomeAmount, newIncomeSource));
+
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
@@ -141,13 +132,13 @@ public class ExpenseTrackerCliApplication {
                                 break;
 
                             case 5:
-                                System.out.println("exiting to main menu..");
+                                System.out.println(EXITING_TO_MAIN_MENU);
                                 System.out.println();
                                 incomeMenuActive = false;
                                 break;
 
                             default:
-                                System.out.println("invalid choice");
+                                System.out.println(INVALID_CHOICE);
                                 System.out.println();
                         }
                     }
@@ -194,11 +185,8 @@ public class ExpenseTrackerCliApplication {
                                 System.out.println("enter the expense description ");
                                 expenseDescription = scanner.nextLine();
 
-                                try {
-                                    expenseService.addExpense(++addExpenseCount,new Expense(expenseAmount, expenseCategory, expenseDate, expenseDescription));
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
+                                expenseService.addExpense(new Expense(expenseAmount, expenseCategory, expenseDate, expenseDescription));
+
                                 System.out.println();
                                 break;
 
@@ -211,12 +199,8 @@ public class ExpenseTrackerCliApplication {
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
+                                expenseService.removeExpense(expenseIndex);
 
-                                try {
-                                    expenseService.removeExpense(expenseIndex);
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
                                 System.out.println();
                                 break;
 
@@ -227,36 +211,31 @@ public class ExpenseTrackerCliApplication {
                                 String newExpenseDate = null;
                                 String newExpenseDescription = null;
 
-                                System.out.println("enter the index of expense  to update ");
                                 try {
+                                    System.out.println("enter the index of expense  to update ");
                                     newExpenseIndex = scanner.nextInt();
                                     scanner.nextLine();
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
 
-                                System.out.println("enter the updated expense amount ");
-                                try {
+                                    System.out.println("enter the updated expense amount ");
+
                                     newExpenseAmount = scanner.nextInt();
                                     scanner.nextLine();
+
+                                    System.out.println("enter the updated expense category ");
+                                    newExpenseCategory = scanner.nextLine();
+
+                                    System.out.println("enter the updated expense date ");
+                                    newExpenseDate = scanner.nextLine();
+
+                                    System.out.println("enter the updated expense description ");
+                                    newExpenseDescription = scanner.nextLine();
+
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
 
-                                System.out.println("enter the updated expense category ");
-                                newExpenseCategory = scanner.nextLine();
+                                expenseService.updateExpense(new Expense(newExpenseIndex, newExpenseAmount, newExpenseCategory, newExpenseDate, newExpenseDescription));
 
-                                System.out.println("enter the updated expense date ");
-                                newExpenseDate = scanner.nextLine();
-
-                                System.out.println("enter the updated expense description ");
-                                newExpenseDescription = scanner.nextLine();
-
-                                try {
-                                    expenseService.updateExpense(newExpenseIndex, new Expense(newExpenseAmount, newExpenseCategory, newExpenseDate, newExpenseDescription));
-                                } catch (Exception e) {
-                                    System.out.println(e);
-                                }
                                 System.out.println();
                                 break;
 
@@ -266,26 +245,30 @@ public class ExpenseTrackerCliApplication {
                                 break;
 
                             case 5:
-                                System.out.println("exiting to main menu..");
+                                System.out.println(EXITING_TO_MAIN_MENU);
                                 System.out.println();
                                 expenseMenuActive = false;
                                 break;
 
                             default:
-                                System.out.println("invalid choice");
+                                System.out.println(INVALID_CHOICE);
                                 System.out.println();
                         }
                     }
                     break;
 
                 case 3:
+                    calculate.profitOrLoss();
+                    break;
+
+                case 4:
                     System.out.println("exiting..");
                     context.close();
                     scanner.close();
                     return;
 
                 default:
-                    System.out.println("invalid choice");
+                    System.out.println(INVALID_CHOICE);
                     System.out.println();
             }
 
