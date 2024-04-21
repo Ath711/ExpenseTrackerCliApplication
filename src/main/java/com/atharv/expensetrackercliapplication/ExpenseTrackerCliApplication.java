@@ -22,7 +22,11 @@ public class ExpenseTrackerCliApplication {
         Scanner scanner = new Scanner(System.in);
 
         boolean mainMenuActive = true;
+        int addIncomeCount = 0;
+        int addExpenseCount = 0;
+
         while (mainMenuActive) {
+            System.out.println();
             System.out.println("1. Select for Income Details Operations");
             System.out.println("2. Select for Expense Details Operations");
             System.out.println("3. exit");
@@ -73,8 +77,7 @@ public class ExpenseTrackerCliApplication {
                                 incomeSource = scanner.nextLine();
 
                                 try {
-                                    incomeService.addIncome(new Income(incomeAmount, incomeSource));
-                                    System.out.println("added successfully..");
+                                    incomeService.addIncome(++addIncomeCount, new Income(incomeAmount, incomeSource));
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
@@ -94,7 +97,6 @@ public class ExpenseTrackerCliApplication {
 
                                 try {
                                     incomeService.removeIncome(incomeIndex);
-                                    System.out.println("removed successfully..");
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
@@ -127,24 +129,14 @@ public class ExpenseTrackerCliApplication {
                                 newIncomeSource = scanner.nextLine();
                                 try {
                                     incomeService.updateIncome(newIncomeIndex, new Income(newIncomeAmount, newIncomeSource));
-                                    System.out.println("updated successfully..");
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
-
                                 System.out.println();
                                 break;
 
                             case 4:
-                                List<Income> incomeList = incomeService.showAllIncome();
-                                if (incomeList.isEmpty())
-                                    System.out.println("no income details are added");
-                                else {
-                                    for (int i = 0; i < incomeList.size(); i++) {
-                                        System.out.println(i + " " + incomeList.get(i));
-                                    }
-                                }
-
+                                incomeService.showAllIncome();
                                 System.out.println();
                                 break;
 
@@ -163,7 +155,7 @@ public class ExpenseTrackerCliApplication {
 
                 case 2:
                     boolean expenseMenuActive = true;
-                    while (expenseMenuActive){
+                    while (expenseMenuActive) {
                         System.out.println("----EXPENSE DETAILS----");
                         System.out.println("1. add expense ");
                         System.out.println("2. remove expense");
@@ -175,11 +167,10 @@ public class ExpenseTrackerCliApplication {
                         try {
                             caseTwoChoice = scanner.nextInt();
                             scanner.nextLine();
-                        }
-                        catch (Exception e){
+                        } catch (Exception e) {
                             System.out.println(e);
                         }
-                        switch (caseTwoChoice){
+                        switch (caseTwoChoice) {
                             case 1:
                                 int expenseAmount = 0;
                                 String expenseCategory = null;
@@ -204,8 +195,7 @@ public class ExpenseTrackerCliApplication {
                                 expenseDescription = scanner.nextLine();
 
                                 try {
-                                    expenseService.addExpense(new Expense(expenseAmount, expenseCategory,expenseDate,expenseDescription));
-                                    System.out.println("updated successfully..");
+                                    expenseService.addExpense(++addExpenseCount,new Expense(expenseAmount, expenseCategory, expenseDate, expenseDescription));
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
@@ -224,7 +214,6 @@ public class ExpenseTrackerCliApplication {
 
                                 try {
                                     expenseService.removeExpense(expenseIndex);
-                                    System.out.println("removed successfully..");
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
@@ -264,26 +253,15 @@ public class ExpenseTrackerCliApplication {
                                 newExpenseDescription = scanner.nextLine();
 
                                 try {
-                                    expenseService.updateExpense(newExpenseIndex, new Expense(newExpenseAmount, newExpenseCategory,newExpenseDate,newExpenseDescription));
-                                    System.out.println("updated successfully..");
+                                    expenseService.updateExpense(newExpenseIndex, new Expense(newExpenseAmount, newExpenseCategory, newExpenseDate, newExpenseDescription));
                                 } catch (Exception e) {
                                     System.out.println(e);
                                 }
-
                                 System.out.println();
                                 break;
 
                             case 4:
-                                List<Expense> expenseList = expenseService.showAllExpense();
-                                if(expenseList.isEmpty()){
-                                    System.out.println("no expenses is added ");
-                                    System.out.println();
-                                }
-                                else{
-                                    for (int i =0; i<expenseList.size(); i++){
-                                        System.out.println(i+" "+expenseList.get(i));
-                                    }
-                                }
+                                expenseService.showAllExpense();
                                 System.out.println();
                                 break;
 
@@ -302,8 +280,9 @@ public class ExpenseTrackerCliApplication {
 
                 case 3:
                     System.out.println("exiting..");
-                    mainMenuActive = false;
-                    break;
+                    context.close();
+                    scanner.close();
+                    return;
 
                 default:
                     System.out.println("invalid choice");

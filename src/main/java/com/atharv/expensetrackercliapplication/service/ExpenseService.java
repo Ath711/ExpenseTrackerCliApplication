@@ -1,28 +1,41 @@
 package com.atharv.expensetrackercliapplication.service;
 
 import com.atharv.expensetrackercliapplication.beans.Expense;
+import com.atharv.expensetrackercliapplication.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.atharv.expensetrackercliapplication.constant.StringConstant.NO_RECORDS;
 
 @Service
 public class ExpenseService {
-    private List<Expense> expenseList = new ArrayList<>();
+    private final ExpenseRepository expenseRepository;
 
-    public void addExpense(Expense expense){
-        expenseList.add(expense);
+    public ExpenseService(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
     }
 
-    public void removeExpense(int index){
-        expenseList.remove(index);
+    public void addExpense(int id, Expense expense) {
+        expenseRepository.insert(id, expense);
+        System.out.println("added successfully..");
     }
 
-    public void updateExpense(int index, Expense expense){
-        expenseList.set(index,expense);
+    public void removeExpense(int id) {
+        if (expenseRepository.checkId(id)) {
+            expenseRepository.deleteById(id);
+            System.out.println("removed successfully..");
+        } else System.out.println(NO_RECORDS);
     }
 
-    public List<Expense> showAllExpense(){
-        return expenseList;
+    public void updateExpense(int id, Expense expense) {
+        if (expenseRepository.checkId(id)) {
+            expenseRepository.updateById(id, expense);
+            System.out.println("updated successfully..");
+        } else System.out.println(NO_RECORDS);
+    }
+
+    public void showAllExpense() {
+        expenseRepository.readALl();
     }
 }
