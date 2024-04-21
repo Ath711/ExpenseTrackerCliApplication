@@ -258,7 +258,7 @@ public class ExpenseTrackerCliApplication {
                     break;
 
                 case 3:
-                    calculate.profitOrLoss();
+                    calculate.budget();
                     break;
 
                 case 4:
